@@ -64,13 +64,8 @@
 									src="survey_edit/code_lists.zul" />
 							</tabpanel>
 							<tabpanel visible="@load(not vm.collectEarthSurvey)">
-								<label
-									value="${labels.survey.species_import.save_survey_before}"
-									visible="@load(empty vm.surveyId)" />
-								<flash
-									src="@load(vm.speciesImportModuleUrl)" sclass="maximised"
-									height="100%" width="100%"
-									visible="@load(not empty vm.surveyId)" />
+								<include id="speciesListInclude"
+									src="survey_edit/species_lists.zul" />
 							</tabpanel>
 							<tabpanel visible="@load(not vm.collectEarthSurvey)">
 								<label

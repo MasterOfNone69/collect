@@ -13,7 +13,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Stack;
 
 import org.apache.commons.lang3.StringUtils;
 import org.openforis.collect.designer.form.CodeListFormObject;
@@ -46,10 +45,9 @@ import org.openforis.idm.metamodel.CodeList;
 import org.openforis.idm.metamodel.CodeList.CodeScope;
 import org.openforis.idm.metamodel.CodeListItem;
 import org.openforis.idm.metamodel.CodeListLevel;
-import org.openforis.idm.metamodel.EntityDefinition;
 import org.openforis.idm.metamodel.NodeDefinition;
+import org.openforis.idm.metamodel.NodeDefinitionVisitor;
 import org.openforis.idm.metamodel.PersistedCodeListItem;
-import org.openforis.idm.metamodel.Schema;
 import org.zkoss.bind.BindUtils;
 import org.zkoss.bind.Binder;
 import org.zkoss.bind.ValidationContext;
@@ -217,21 +215,16 @@ public class CodeListsVM extends SurveyObjectBaseVM<CodeList> {
 
 	protected List<NodeDefinition> getReferences(CodeList item) {
 		List<NodeDefinition> references = new ArrayList<NodeDefinition>();
-		Schema schema = survey.getSchema();
-		List<EntityDefinition> rootEntities = schema.getRootEntityDefinitions();
-		Stack<NodeDefinition> stack = new Stack<NodeDefinition>();
-		stack.addAll(rootEntities);
-		while ( ! stack.isEmpty() ) {
-			NodeDefinition defn = stack.pop();
-			if ( defn instanceof EntityDefinition ) {
-				stack.addAll(((EntityDefinition) defn).getChildDefinitions());
-			} else if ( defn instanceof CodeAttributeDefinition ) {
-				CodeList list = ((CodeAttributeDefinition) defn).getList();
-				if ( list.equals(item) ) {
-					references.add(defn);
+		survey.getSchema().traverse(new NodeDefinitionVisitor() {
+			public void visit(NodeDefinition defn) {
+				if ( defn instanceof CodeAttributeDefinition ) {
+					CodeList list = ((CodeAttributeDefinition) defn).getList();
+					if ( list.equals(item) ) {
+						references.add(defn);
+					}
 				}
-			};
-		}
+			}
+		});
 		return references;
 	}
 	

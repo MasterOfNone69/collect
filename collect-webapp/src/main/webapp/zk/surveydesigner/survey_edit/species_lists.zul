@@ -1,0 +1,54 @@
+<?taglib uri="http://www.zkoss.org/dsp/web/core" prefix="c"?>
+<?component name="fieldErrorHandler" class="org.openforis.collect.designer.component.FieldErrorHandler"?>
+<zk>
+	<borderlayout id="speciesListsManagerContainer"
+		apply="org.zkoss.bind.BindComposer"
+		viewModel="@id('vm') @init('org.openforis.collect.designer.viewmodel.SpeciesListsVM')"
+		validationMessages="@id('vmsgs')"
+		hflex="true" vflex="true">
+		<west width="220px">
+			<borderlayout>
+				<center border="none"
+					title="${labels.survey.species_list.items.header}:">
+					<vlayout vflex="true">
+						<box pack="center" align="center" hflex="1" vflex="1" visible="@load(empty vm.items)">
+							<label style="white-space: pre-line;" value="${labels.survey.species_list.items.empty_list}" />
+						</box>
+						<listbox id="itemsListBox" visible="@load(not empty vm.items)"
+							selectedItem="@load(vm.selectedItem)" model="@load(vm.items)"
+							onSelect="@command('selectionChanged', selectedItem=self.selectedItem.value)"
+							width="220px" vflex="true">
+							<listhead>
+								<listheader label="" width="175px" />
+								<listheader label="" width="30px" />
+							</listhead>
+							<template name="model">
+								<listitem>
+									<listcell label="@load(each.name)" />
+									<listcell tooltiptext="@load(vm.getWarnings(each))">
+										<image visible="@load(vm.hasWarnings(each))"
+											src="/assets/images/warning-small.png" /> 
+									</listcell>
+								</listitem>
+							</template>
+						</listbox>
+						<menubar>
+							<menuitem 
+								sclass="icon-button with-label" 
+								label="${labels.survey.species_list.add_species_list}"
+								image="/assets/images/add.png" 
+								onClick="@command('newItem')"
+								width="70px" />
+							<menuitem
+								sclass="icon-button"
+								tooltiptext="${labels.global.delete_item}"
+								image="/assets/images/delete.png"
+								disabled="@load(empty vm.selectedItem)"
+								onClick="@command('deleteSpeciesList', item=vm.selectedItem)" />
+						</menubar>
+					</vlayout>
+				</center>
+			</borderlayout>
+		</west>
+	</borderlayout>
+</zk>
